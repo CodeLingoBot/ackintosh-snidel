@@ -176,55 +176,7 @@ class Coordinator
      * @return  \Ackintosh\Snidel\Worker
      * @throws  \RuntimeException
      */
-    private function forkWorker()
-    {
-        try {
-            $process = $this->pcntl->fork();
-        } catch (\RuntimeException $e) {
-            $message = 'failed to fork worker: ' . $e->getMessage();
-            $this->log->error($message);
-            throw new \RuntimeException($message);
-        }
-
-        $worker = new Worker($process, $this->config->get('driver'), $this->config->get('pollingDuration'));
-
-        if (getmypid() === $this->master->getPid()) {
-            // master
-            $this->log->info('forked worker. pid: ' . $worker->getPid());
-            return $worker;
-        } else {
-            // @codeCoverageIgnoreStart
-            // covered by SnidelTest via worker process
-            // worker
-            $this->log->info('has forked. pid: ' . getmypid());
-
-            foreach ($this->signals as $sig) {
-                $this->pcntl->signal($sig, function ($sig) {
-                    $this->receivedSignal = $sig;
-                    exit;
-                }, false);
-            }
-
-            register_shutdown_function(function () use ($worker) {
-                if ($this->receivedSignal === null && $worker->isInProgress()) {
-                    $worker->error();
-                }
-            });
-
-            $this->log->info('----> started the function.');
-            try {
-                $worker->run();
-            } catch (\RuntimeException $e) {
-                $this->log->error($e->getMessage());
-                exit;
-            }
-            $this->log->info('<---- completed the function.');
-
-            $this->log->info('queued the result and exit.');
-            exit;
-            // @codeCoverageIgnoreEnd
-        }
-    }
+    
 
     /**
      * @return  bool

@@ -40,26 +40,7 @@ class Log
      *
      * @return array
      */
-    private function context()
-    {
-        $pid  = getmypid();
-        switch ($pid) {
-            case $this->ownerPid:
-                $role = 'owner';
-                break;
-            case $this->masterPid:
-                $role = 'master';
-                break;
-            default:
-                $role = 'worker';
-                break;
-        }
-
-        return [
-            'role' => $role,
-            'pid'  => $pid,
-        ];
-    }
+    
 
     /**
      * info

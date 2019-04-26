@@ -103,23 +103,7 @@ class Snidel
      * @param Coordinator $coordinator
      * @param Log $log
      */
-    private function registerSignalHandler($coordinator, $log)
-    {
-        $pcntl = new Pcntl();
-        foreach ($this->signals as $sig) {
-            $pcntl->signal(
-                $sig,
-                function ($sig) use ($log, $coordinator) {
-                    $log->info('received signal. signo: ' . $sig);
-                    $log->info('--> sending a signal " to children.');
-                    $coordinator->sendSignalToMaster($sig);
-                    $log->info('<-- signal handling has been completed successfully.');
-                    exit;
-                },
-                false
-            );
-        }
-    }
+    
 
     public function __destruct()
     {
